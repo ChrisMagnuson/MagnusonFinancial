@@ -187,3 +187,20 @@ function New-GuacamoleStackFirewallRules {
     New-NetFirewallRule -Name Guacamole_HTTP -DisplayName "Guacamole HTTP" -Group Guacamole -Direction Inbound -Protocol TCP -Action Allow -Enabled True -RemotePort Any -LocalPort 8080 
     New-NetFirewallRule -Name Guacamole_HTTPS -DisplayName "Guacamole HTTPS" -Group Guacamole -Direction Inbound -Protocol TCP -Action Allow -Enabled True -RemotePort Any -LocalPort 8090
 }
+
+function New-DockerHostVM {
+    $VMHost = Get-VMHost
+    
+    New-VM -Name DockerHost -MemoryStartupBytes 1024MB -Generation 2 -NewVHDSizeBytes 60GB -NewVHDPath "$($VMHost.VirtualHardDiskPath)\DockerHost.vhdx" |
+    Set-VMFirmware -EnableSecureBoot "Off"
+
+}
+
+function Remove-DockerHostVM {
+    
+    Get-VM -Name DockerHost | 
+    Get-VMHardDiskDrive | 
+    Remove-Item -Confirm
+
+    Remove-VM -Name DockerHost
+}
